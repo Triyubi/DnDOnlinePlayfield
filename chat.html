@@ -1,0 +1,63 @@
+<!DOCTYPE HTML> 
+<html lang="en"> 
+<head>
+<title>PeerJS chat demo</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+<meta http-equiv="Content-Language" content="en-us"> 
+
+<link href="fancy.css" rel="stylesheet" type="text/css">
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
+<script type="text/javascript" src="peer.js"></script>
+<script type="text/javascript" src="main.js"></script>
+<script>
+	// Await connections from others
+	peer.on('connection', connect);
+	
+var idCounter=0;
+
+$(document).ready(function() {
+	$("#test").click(function(){
+		var m=$("<div>").addClass("minion").attr("id","Minion_"+idCounter).attr("MinionId",idCounter);
+		var genid=idCounter;
+		box.append(m);
+				
+		m.draggable({
+			drag: function(event) {
+				var x=event.pageX-box.position().left;
+				var y=event.pageY-box.position().top;
+				eachActiveConnection(function(c) {
+					if (c.label === 'chat') {
+						c.send(verpacken("MinionMove",x,y,m.attr("MinionId")));
+					}
+				});
+			}
+		});
+		
+		eachActiveConnection(function(c) {
+			if (c.label === 'chat') {
+				c.send(verpacken("Minion","Oger",idCounter));
+			}
+		});
+		idCounter++;
+	});
+});
+
+</script>
+</head> 
+ 
+<body> 
+  <div id="actions">
+    Connect to a peer: <input type="text" id="rid" placeholder="Master ID"><input type="text" id="name" placeholder="Name"><input type="color" id="favcolor" value="#ff0000"><input class="button" type="button" value="Connect" id="connect">
+	<button id="test">test</button>
+  </div>
+
+  <div id="box" style="background: #fff; font-size: 18px;padding:40px 30px;">
+    Spielfeld
+	<div id="Player" class="player"></div>
+  </div>
+  
+</div>
+</body> 
+</html> 

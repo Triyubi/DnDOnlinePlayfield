@@ -1,0 +1,172 @@
+<!DOCTYPE HTML> 
+<html lang="en"> 
+<head>
+<title>PeerJS chat demo</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"> 
+<meta http-equiv="Content-Language" content="en-us"> 
+
+<link href="fancy.css" rel="stylesheet" type="text/css">
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
+<script type="text/javascript" src="peer.js"></script>
+<script type="text/javascript" src="main.js"></script>
+<script>
+// Await connections from others
+peer.on('connection', connect);
+
+// Handle a connection object.
+function connect(c) {
+  // Handle a chat connection.
+  if (c.label === 'chat') {
+    var chatbox = $('<div></div>').addClass('connection');
+    var header = $('<h1></h1>').addClass('active').attr('id', c.peer).html('Chat with <strong>' + c.peer + '</strong><br>');
+    var messages = $('<div><em>Peer connected.</em></div>').addClass('messages');
+    chatbox.append(header);
+    chatbox.append(messages);
+ 
+    // Select connection handler.
+    header.on('click', function() {
+      if ($(this).attr('class').indexOf('active') === -1) {
+        $(this).addClass('active');
+		$(this).parent().addClass('active');
+      } else {
+        $(this).removeClass('active');
+		$(this).parent().removeClass('active');
+      }
+    });
+    $('.filler').hide();
+    $('#connections').append(chatbox);
+
+    c.on('data', function(data) {
+		var UserData=JSON.parse(data);
+		
+		if(UserData.type!=="Position"){
+			var l=$("<div></div>").addClass("lastsend");
+			l.append(data);
+			l.on('click', function() {
+				$('#text').val($(this).text());
+			});
+			messages.append(l);
+		}
+		
+		if(UserData.type==="Join"){
+			var h=$("h1[id="+UserData.id+"]");
+			h.css("background",UserData.color);
+			h.html(h.html()+UserData.name);
+		}
+		
+	});
+    
+	
+	c.on('close', function() {
+          //alert(c.peer + ' has left the chat.');
+          chatbox.remove();
+          if ($('.connection').length === 0) {
+            $('.filler').show();
+          }
+          delete connectedPeers[c.peer];
+        });
+  } else if (c.label === 'file') {
+    c.on('data', function(data) {
+      // If we're getting a file, create a URL for it.
+      if (data.constructor === ArrayBuffer) {
+        var dataView = new Uint8Array(data);
+        var dataBlob = new Blob([dataView]);
+        var url = window.URL.createObjectURL(dataBlob);
+        $('#' + c.peer).find('.messages').append('<div><span class="file">' +
+            c.peer + ' has sent you a <a target="_blank" href="' + url + '">file</a>.</span></div>');
+      }
+    });
+  }
+  connectedPeers[c.peer] = 1;
+}
+
+$(document).ready(function() {
+	$("#test").click(function(){
+		eachActiveConnection(function(c) {
+				/*var m=$("<div>").addClass("playerCharacters").attr("id","Player_"+UserData.id).attr("title","name:"+UserData.name);
+				m.css("border-color",UserData.color).css("background",UserData.color);
+				m.css("border-color",UserData.color).css("background",UserData.color);
+				box.append(p);*/
+		
+			c.send(verpacken("JoinListe"));
+		});
+	});
+
+	// Send a chat message to all active connections.
+	$("#Force").click(function(e) {
+		// For each active connection, send the message.
+		var msg = $('#text').val();
+		if($("#Vorauswahl").val()==="Eval"){
+			msg=verpacken("Eval",$('#text').val());
+		}
+		var actives = $('.active[id]');
+		var checkedIds = {};
+		actives.each(function() {
+		  var peerId = $(this).attr('id');
+		  if (!checkedIds[peerId]) {
+			var conns = peer.connections[peerId];
+			for (var i = 0, ii = conns.length; i < ii; i += 1) {
+			  var c = conns[i];
+			  if (c.label === 'chat') {
+					c.send(msg);
+					var l=$("<div></div>").addClass("lastsend");
+					var s=$('<span class="you">You: </span>');
+					l.append(s).append(msg);
+					l.on('click', function() {
+						$('#text').val($(this).text());
+					});
+					$(this).parent().find('.messages').append(l);
+					//$(this).find('.messages').append('<div><span class="you">You: </span>' + msg+ '</div>');
+				}
+			}
+		  }
+
+		  checkedIds[peerId] = 1;
+		});
+		$('#text').val('');
+		$('#text').focus();
+	});
+
+	
+	$("#Vorauswahl").change(function(){
+		var array={};
+		array["Position"]='{"id":"<ID>","type":"Position","x":0,"y":0}';
+		array["Eval"]="$('#Player').css({'left': '100px', 'top': '100px'})";
+		$('#text').val(array[$("#Vorauswahl").val()]);
+	
+	});
+});
+</script>
+</head> 
+ 
+<body> 
+  <div id="actions">
+    Your PeerJS ID is <span id="pid"></span>
+    Connect to a peer: <input type="text" id="rid" placeholder="Someone else's id"><input class="button" type="button" value="Connect" id="connect"><br><br>
+
+    <div>
+      <textarea id="text" placeholder="Enter message"></textarea><button id="Force" class="button" >Send to selected peers</button>
+	  <select id="Vorauswahl">
+		<option value="Position">Position</option>
+		<option value="Eval">eval</option>
+		<option value="schubsen">Schubsen</option>
+		<option value="Free">Free</option>
+		</select> 
+    </div>
+    <button id="close">Close selected connections</button>
+	<button id="test">Alle Verbinden</button>
+  </div>
+
+  <div id="wrap"><div id="connections"><span class="filler">You have not yet
+        made any connections.</span></div>
+    <div class="clear"></div></div>
+
+  <div id="box" style="background: #fff; font-size: 18px;padding:40px 30px; text-align: center;">
+    Drag file here to send to active connections.
+  </div>
+  
+</div>
+</body> 
+</html> 
