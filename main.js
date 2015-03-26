@@ -243,8 +243,8 @@ $(document).ready(function() {
 			console.log("drag y: " + event.pageY + "-" + box.position().top);
 			var o = $("#Player");//document.getElementById('Player');
 			if(o){
-				var x=o.pageX;
-				var y=o.pageY;
+				var x = o.top;
+				var y = o.left;
 				console.log("new x: " + x);
 				console.log("new y: " + y);
 			}
