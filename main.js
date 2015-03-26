@@ -234,9 +234,20 @@ $(document).ready(function() {
 		});
 	});
 	
-	$( "#Player" ).draggable({
+	var mousePosX = 0;
+	var mousePosY = 0;
+	
+	$("#Player").draggable({
 		drag: function(event) {
-			console.log("drag");
+			console.log("drag x: " + event.pageX + "-" + box.position().left);
+			console.log("drag y: " + event.pageY + "-" + box.position().top);
+			var o = $("#Player");//document.getElementById('Player');
+			if(o){
+				var x=o.pageX;
+				var y=o.pageY;
+				console.log("new x: " + x);
+				console.log("new y: " + y);
+			}
 			var x=event.pageX-box.position().left;
 			var y=event.pageY-box.position().top;
 
@@ -247,6 +258,15 @@ $(document).ready(function() {
 			});
 		}
 	});
+	
+	
+	/*$("#Player").onmousedown(function(){
+		// X- und Y-Position des Mauscursors in Abhängigkeit des
+		// Browsers ermitteln
+		mousePosX = document.all ? event.offsetX : event.pageX;
+		MousePosY = document.all ? event.offsetY : event.pageY;
+		// Ausgabe im dafür vorgesehenen SPAN-Element
+	});*/
 
   
   // Connect to a peer

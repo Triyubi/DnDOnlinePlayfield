@@ -83,7 +83,7 @@ function connect(c) {
 }
 
 $(document).ready(function() {
-	$("#test").click(function(){
+	$("#connectAll").click(function(){
 		eachActiveConnection(function(c) {
 				/*var m=$("<div>").addClass("playerCharacters").attr("id","Player_"+UserData.id).attr("title","name:"+UserData.name);
 				m.css("border-color",UserData.color).css("background",UserData.color);
@@ -147,7 +147,7 @@ $(document).ready(function() {
     Connect to a peer: <input type="text" id="rid" placeholder="Someone else's id"><input class="button" type="button" value="Connect" id="connect"><br><br>
 
     <div>
-      <textarea id="text" placeholder="Enter message"></textarea><button id="Force" class="button" >Send to selected peers</button>
+      <textarea id="text" placeholder="Enter message" style="width:600px"></textarea><button id="Force" class="button" >Send to selected peers</button>
 	  <select id="Vorauswahl">
 		<option value="Position">Position</option>
 		<option value="Eval">eval</option>
@@ -156,7 +156,7 @@ $(document).ready(function() {
 		</select> 
     </div>
     <button id="close">Close selected connections</button>
-	<button id="test">Alle Verbinden</button>
+	<button id="connectAll">Alle Verbinden</button>
   </div>
 
   <div id="wrap"><div id="connections"><span class="filler">You have not yet

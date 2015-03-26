@@ -18,7 +18,7 @@
 var idCounter=0;
 
 $(document).ready(function() {
-	$("#test").click(function(){
+	$("#minion").click(function(){
 		var m=$("<div>").addClass("minion").attr("id","Minion_"+idCounter).attr("MinionId",idCounter);
 		var genid=idCounter;
 		box.append(m);
@@ -50,7 +50,7 @@ $(document).ready(function() {
 <body> 
   <div id="actions">
     Connect to a peer: <input type="text" id="rid" placeholder="Master ID"><input type="text" id="name" placeholder="Name"><input type="color" id="favcolor" value="#ff0000"><input class="button" type="button" value="Connect" id="connect">
-	<button id="test">test</button>
+	<button id="minion">Minion</button>
   </div>
 
   <div id="box" style="background: #fff; font-size: 18px;padding:40px 30px;">
